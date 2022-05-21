@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: trino-ingress
+  namespace: bigdata
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: trino.silveira.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tcb-trino
+                port:
+                  number: 8080

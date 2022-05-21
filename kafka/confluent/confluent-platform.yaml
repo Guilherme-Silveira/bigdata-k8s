@@ -1,0 +1,108 @@
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Zookeeper
+metadata:
+  name: zookeeper
+  namespace: bigdata
+spec:
+  replicas: 3
+  image:
+    application: confluentinc/cp-zookeeper:7.1.0
+    init: confluentinc/confluent-init-container:2.3.0
+  dataVolumeCapacity: 10Gi
+  logVolumeCapacity: 10Gi
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Kafka
+metadata:
+  name: kafka
+  namespace: bigdata
+spec:
+  replicas: 3
+  image:
+    application: confluentinc/cp-server:7.1.0
+    init: confluentinc/confluent-init-container:2.3.0
+  dataVolumeCapacity: 10Gi
+  metricReporter:
+    enabled: true
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: ControlCenter
+metadata:
+  name: controlcenter
+  namespace: bigdata
+spec:
+  replicas: 1
+  image:
+    application: confluentinc/cp-enterprise-control-center:7.1.0
+    init: confluentinc/confluent-init-container:2.3.0
+  dataVolumeCapacity: 10Gi
+  dependencies:
+    schemaRegistry:
+      url: http://schemaregistry.confluent.svc.cluster.local:8081
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: SchemaRegistry
+metadata:
+  name: schemaregistry
+  namespace: bigdata
+spec:
+  replicas: 1
+  image:
+    application: confluentinc/cp-schema-registry:7.1.0
+    init: confluentinc/confluent-init-container:2.3.0
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kafka-ingress
+  namespace: bigdata
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: kafka.silveira.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kafka-0-internal
+                port: 
+                  number: 9092
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kafka-1-internal
+                port: 
+                  number: 9092
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kafka-2-internal
+                port: 
+                  number: 9092
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: controlcenter
+  namespace: bigdata
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: controlcenter.silveira.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: controlcenter
+                port:
+                  number: 9021

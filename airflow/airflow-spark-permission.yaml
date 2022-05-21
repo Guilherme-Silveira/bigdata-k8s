@@ -1,0 +1,28 @@
+# Role for spark-on-k8s-operator to create resources on cluster
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: spark-cluster-cr
+  labels:
+    rbac.authorization.kubeflow.org/aggregate-to-kubeflow-edit: "true"
+rules:
+  - apiGroups:
+      - sparkoperator.k8s.io
+    resources:
+      - sparkapplications
+    verbs:
+      - '*'
+---
+# Allow airflow-worker service account access for spark-on-k8s
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: airflow-spark-crb
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: spark-cluster-cr
+subjects:
+  - kind: ServiceAccount
+    name: airflow-worker
+    namespace: bigdata

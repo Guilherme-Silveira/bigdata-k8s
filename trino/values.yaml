@@ -1,0 +1,228 @@
+# Default values for trino.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: trinodb/trino
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart version.
+  tag: latest
+
+imagePullSecrets:
+  - name: registry-credentials
+
+server:
+  workers: 2
+  node:
+    environment: production
+    dataDir: /data/trino
+    pluginDir: /usr/lib/trino/plugin
+  log:
+    trino:
+      level: INFO
+  config:
+    path: /etc/trino
+    http:
+      port: 8080
+    https:
+      enabled: false
+      port: 8443
+      keystore:
+        path: ""
+    # Trino supports multiple authentication types: PASSWORD, CERTIFICATE, OAUTH2, JWT, KERBEROS
+    # For more info: https://trino.io/docs/current/security/authentication-types.html
+    authenticationType: ""
+    query:
+      maxMemory: "4GB"
+      maxMemoryPerNode: "1GB"
+    memory:
+      heapHeadroomPerNode: "1GB"
+  exchangeManager:
+    name: "filesystem"
+    baseDir: "/tmp/trino-local-file-system-exchange-manager"
+  workerExtraConfig: ""
+  coordinatorExtraConfig: ""
+  autoscaling:
+    enabled: false
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 50
+
+accessControl: {}
+  # type: configmap
+  # refreshPeriod: 60s
+  # # Rules file is mounted to /etc/trino/access-control
+  # configFile: "rules.json"
+  # rules:
+  #   rules.json: |-
+  #     {
+  #       "catalogs": [
+  #         {
+  #           "user": "admin",
+  #           "catalog": "(mysql|system)",
+  #           "allow": "all"
+  #         },
+  #         {
+  #           "group": "finance|human_resources",
+  #           "catalog": "postgres",
+  #           "allow": true
+  #         },
+  #         {
+  #           "catalog": "hive",
+  #           "allow": "all"
+  #         },
+  #         {
+  #           "user": "alice",
+  #           "catalog": "postgresql",
+  #           "allow": "read-only"
+  #         },
+  #         {
+  #           "catalog": "system",
+  #           "allow": "none"
+  #         }
+  #       ],
+  #       "schemas": [
+  #         {
+  #           "user": "admin",
+  #           "schema": ".*",
+  #           "owner": true
+  #         },
+  #         {
+  #           "user": "guest",
+  #           "owner": false
+  #         },
+  #         {
+  #           "catalog": "default",
+  #           "schema": "default",
+  #           "owner": true
+  #         }
+  #       ]
+  #     }
+
+additionalNodeProperties: {}
+
+additionalConfigProperties: {}
+
+additionalLogProperties: {}
+
+additionalExchangeManagerProperties: {}
+
+eventListenerProperties: {}
+
+additionalCatalogs:
+  hive: |
+    connector.name=hive
+    hive.metastore.uri=thrift://hive:9083
+    hive.s3.aws-access-key=silveira
+    hive.s3.aws-secret-key=guilherme@123
+    hive.s3.endpoint=http://minio-minio-storage:9000
+    hive.s3.path-style-access=true
+    hive.allow-drop-table=true
+    hive.metastore.thrift.delete-files-on-drop=true
+  delta: |
+    connector.name=delta-lake
+    hive.metastore.uri=thrift://hive:9083
+    hive.s3.aws-access-key=silveira
+    hive.s3.aws-secret-key=guilherme@123
+    hive.s3.endpoint=http://minio-minio-storage:9000
+    hive.s3.path-style-access=true
+    delta.enable-non-concurrent-writes=true
+
+# Array of EnvVar (https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#envvar-v1-core)
+env:
+  - name: AWS_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: my-s3-keys
+        key: access-key
+  - name: AWS_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: my-s3-keys
+        key: secret-key
+
+initContainers: {}
+  # coordinator:
+  #   - name: init-coordinator
+  #     image: busybox:1.28
+  #     imagePullPolicy: IfNotPresent
+  #     command: ['sh', '-c', "until nslookup myservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+  # worker:
+  #   - name: init-worker
+  #     image: busybox:1.28
+  #     command: ['sh', '-c', 'echo The worker is running! && sleep 3600']
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+
+service:
+  type: ClusterIP
+  port: 8080
+
+nodeSelector: {}
+
+tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+
+affinity: {}
+
+auth: {}
+  # Set username and password
+  # https://trino.io/docs/current/security/password-file.html#file-format
+  # passwordAuth: "username:encrypted-password-with-htpasswd"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+  # Annotations to add to the service account
+  annotations: {}
+
+secretMounts: []
+
+coordinator:
+  jvm:
+    maxHeapSize: "8G"
+    gcMethod:
+      type: "UseG1GC"
+      g1:
+        heapRegionSize: "32M"
+
+  additionalJVMConfig: {}
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+worker:
+  jvm:
+    maxHeapSize: "8G"
+    gcMethod:
+      type: "UseG1GC"
+      g1:
+        heapRegionSize: "32M"
+
+  additionalJVMConfig: {}
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi

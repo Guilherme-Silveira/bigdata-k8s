@@ -1,0 +1,134 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyter
+  namespace: bigdata
+spec:
+  selector:
+    matchLabels:
+      app: jupyter
+  template:
+    metadata:
+      labels:
+        app: jupyter
+    spec:
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+      serviceAccountName: jupyter
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - name: jupyter
+        image: guisilveira/jupyter
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "4096Mi"
+            cpu: "2000m"
+        ports:
+        - containerPort: 8888
+        volumeMounts:
+        - name: storage-config-volume
+          mountPath: /home/jupyter/.jupyter/jupyter_notebook_config.py
+          subPath: app_configuration.py
+        command:
+          - "jupyter"
+          - "lab"
+          - "--ip"
+          - "0.0.0.0"
+          - "--port"
+          - "8888"
+          - "--no-browser"
+          - "--NotebookApp.token=''" 
+          - "--NotebookApp.password=''"
+      volumes:
+      - name: storage-config-volume
+        configMap:
+          name: jupyter-object-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jupyter
+  namespace: bigdata
+  labels:
+    app: jupyter
+spec:
+  ports:
+  - port: 8888
+    name: jupyter
+  - name: driver-rpc-port
+    protocol: TCP 
+    port: 7078
+    targetPort: 7078
+  - name: blockmanager
+    protocol: TCP 
+    port: 7079
+    targetPort: 7079
+  - name: driver-rpc-port2
+    protocol: TCP 
+    port: 7080
+    targetPort: 7080
+  - name: blockmanager2
+    protocol: TCP 
+    port: 7081
+    targetPort: 7081
+  selector:
+    app: jupyter
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jupyter-ingress
+  namespace: bigdata
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: jupyter.silveira.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jupyter
+                port:
+                  number: 8888
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jupyter
+  namespace: bigdata
+  labels:
+    app: jupyter
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: jupyter
+subjects:
+  - kind: ServiceAccount
+    name: jupyter
+    namespace: bigdata
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jupyter-object-storage
+  namespace: bigdata
+data:
+  app_configuration.py: |
+    from s3contents import S3ContentsManager
+    c = get_config()
+    c.NotebookApp.contents_manager_class = S3ContentsManager
+    c.S3ContentsManager.access_key_id = "silveira"
+    c.S3ContentsManager.secret_access_key = "guilherme@123"
+    c.S3ContentsManager.endpoint_url = "http://minio-minio-storage:9000"
+    c.S3ContentsManager.bucket = "jupyter"
+    c.S3ContentsManager.prefix = "notebooks"

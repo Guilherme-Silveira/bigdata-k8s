@@ -1,0 +1,52 @@
+nameOverride: "minio-storage"
+
+rootUser: "silveira"
+rootPassword: "guilherme@123"
+
+replicas: 4
+
+persistence:
+  enabled: true
+  storageClass: "local-path"
+  size: 20Gi
+  accessMode: ReadWriteOnce
+
+service:
+  type: ClusterIP
+  clusterIP: ~
+  port: "9000"
+
+ingress:
+  enabled: true
+  labels: {}
+  annotations: 
+    kubernetes.io/ingress.class: nginx
+  path: /
+  hosts:
+    - minio.silveira.com
+  tls: []
+
+consoleService:
+  type: ClusterIP
+  clusterIP: ~
+  ## Make sure to match it to minioConsolePort
+  port: "9001"
+  nodePort: 32001
+
+consoleIngress:
+  enabled: true
+  labels: {}
+  annotations: 
+    kubernetes.io/ingress.class: nginx
+  path: /
+  hosts:
+    - console-minio.silveira.com
+  tls: []
+
+resources:
+  requests:
+    memory: 2Gi
+
+tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
