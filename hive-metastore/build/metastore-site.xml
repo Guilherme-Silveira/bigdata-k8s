@@ -25,7 +25,7 @@
 </property>
 <property>
 	<name>metastore.warehouse.dir</name>
-	<value>s3a://warehouse/</value>
+	<value>s3a://default/</value>
 </property>
 <property>
 	<name>metastore.thrift.port</name>
