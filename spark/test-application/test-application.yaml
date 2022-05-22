@@ -7,7 +7,6 @@ spec:
   type: Python
   pythonVersion: "3"
   mode: cluster
-  timeToLiveSeconds: 10
   image: "guisilveira/test-application-spark"
   imagePullPolicy: Always
   mainApplicationFile: local:///app/test-application.py
