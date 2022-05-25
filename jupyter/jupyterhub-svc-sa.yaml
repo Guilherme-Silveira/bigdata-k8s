@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jupyterhub-driver
+  namespace: bigdata
+  labels:
+    app: jupyterhub
+spec:
+  ports:
+  - name: driver-rpc-port
+    protocol: TCP 
+    port: 7078
+    targetPort: 7078
+  - name: blockmanager
+    protocol: TCP 
+    port: 7079
+    targetPort: 7079
+  - name: driver-rpc-port2
+    protocol: TCP 
+    port: 7080
+    targetPort: 7080
+  - name: blockmanager2
+    protocol: TCP 
+    port: 7081
+    targetPort: 7081
+  selector:
+    app: jupyterhub
+    component: singleuser-server
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jupyter
+  namespace: bigdata
+  labels:
+    app: jupyter
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: jupyter
+subjects:
+  - kind: ServiceAccount
+    name: jupyter
+    namespace: bigdata
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
