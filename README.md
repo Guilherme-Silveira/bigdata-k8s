@@ -61,7 +61,7 @@ kubectl apply -f ingress-controller.yaml
 Dentro desse manifest, o Service do Nginx foi configurado como NodePort, tendo como bind a porta 30000 e aqui está a mágica de como tudo isso vai permitir acessos externos ao servicos do cluster.
 
 No passo anterior, na criacao do cluster, definimos que toda requisicão feita na porta 80 da máquina local terá seu tráfego redirecionado para a porta 30000 do cluster Kubernetes que está executando dentro do Docker e agora, configuramos que o servico que está rodando nessa porta dentro do cluster Kubernetes será o Nginx, ou seja, o acesso externo terá o seguinte fluxo:
-
+![network_flow](https://user-images.githubusercontent.com/40548889/170897468-e252bd8a-db5a-41d4-8190-cbd1102d9c74.png)
 
 
 ---
