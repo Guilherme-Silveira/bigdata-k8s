@@ -29,17 +29,6 @@ spec:
       containers:
       - name: metastore
         image: guisilveira/hive-metastore
-        env:
-        - name: AWS_ACCESS_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: my-s3-keys
-              key: access-key
-        - name: AWS_SECRET_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: my-s3-keys
-              key: secret-key
         ports:
         - containerPort: 9083
         volumeMounts:
