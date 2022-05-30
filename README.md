@@ -5,6 +5,7 @@ Esse repositório tem como propósito criar um ambiente big data do zero no Kube
 - Minio (Data Lake)
 - Airflow (Orquestrador)
 - Apache Kafka (Streaming)
+- Hive Metastore (Metadados - Tabelas)
 - Apache Spark on K8S (Processamento Batch e Streaming)
 - JupyterHub (Processamento - Integrado com Apache Spark)
 - Delta (Delta Lake integrado com o Apache Spark e Jupyterhub)
@@ -61,8 +62,29 @@ kubectl apply -f ingress-controller.yaml
 Dentro desse manifest, o Service do Nginx foi configurado como NodePort, tendo como bind a porta 30000 e aqui está a mágica de como tudo isso vai permitir acessos externos ao servicos do cluster.
 
 No passo anterior, na criacao do cluster, definimos que toda requisicão feita na porta 80 da máquina local terá seu tráfego redirecionado para a porta 30000 do cluster Kubernetes que está executando dentro do Docker e agora, configuramos que o servico que está rodando nessa porta dentro do cluster Kubernetes será o Nginx, ou seja, o acesso externo terá o seguinte fluxo:
+
 ![network_flow](https://user-images.githubusercontent.com/40548889/170897468-e252bd8a-db5a-41d4-8190-cbd1102d9c74.png)
 
+---
+# Arquivo Hosts
+O arquivo hosts da sua máquina permite que você adicione uma relacão de IP's e "registros DNS" que sua máquina irá traduzir para estabelecer uma comunicacão. 
+Se você quiser utilizar os valores padrões que foram definidos nesse projeto, execute os seguintes passos:
+```
+sudo vim /etc/hosts
+```
+Adicione o seguinte conteúdo ao arquivo:
+```
+127.0.0.1 minio.silveira.com
+127.0.0.1 console-minio.silveira.com
+127.0.0.1 trino.silveira.com
+127.0.0.1 kafka.silveira.com
+127.0.0.1 kafka-ui.silveira.com
+127.0.0.1 superset.silveira.com
+127.0.0.1 airflow.silveira.com
+127.0.0.1 jupyterhub.silveira.com
+```
+
+Lembrando que é possível usar seu próprios "registros DNS" customizados, mas se esse for o caso, lembre-se de mudar os valores necessários nos manifests/helm charts durante o deploy de cada uma das ferramentas da stack.
 
 ---
 # Namespace
@@ -74,7 +96,7 @@ bash create-namespace.sh
 
 ---
 # Minio
-O [Minio](https://min.io/) é um Object Storage nativo para Kubernetes. Ele será o nosso Data Lake, onde todos os dados serão armazenados. 
+O [Minio](https://min.io/) é um Object Storage nativo para Kubernetes. O fato curioso é que ele utiliza o protocolo S3 para comunicacão, então é quase que uma solucão de S3 on-premises. Ele será o nosso Data Lake, onde todos os dados serão armazenados. 
 Ele possui dois métodos principais de instalacão:
 - Helm Chart
 - Operator
@@ -86,8 +108,199 @@ Para instalá-lo, a partir do diretório raiz do projeto, execute os seguintes c
 cd minio
 bash install-minio.sh
 ```
-Esse script simplesmente faz o download do repositório do Helm do Minio e instala-o utilizando como paramêtro o arquivo values.yaml que está dentro do diretório. Nesse arquivo são definidas todas as propriedades que Minio vai possuir (memória, storage, quantidade de nodes). Os valores default podem não atender exatamente o seu caso de uso, então sinta-se livre para modificar esse arquivo conforme sua necessidade. 
+Esse script simplesmente faz o download do repositório do Helm do Minio e instala-o utilizando como paramêtro o arquivo values.yaml que está dentro do diretório. Nesse arquivo são definidas todas as propriedades que Minio vai possuir (memória, storage, quantidade de nodes). Os valores default podem não atender exatamente o seu caso de uso, então sinta-se livre para modificar esse arquivo conforme sua necessidade.
 
-### OBS: O values.yaml será utilizado para todas as ferramentas que forem instaladas via Helm, então sinta-se livre para modificar algumas configuracões desse arquivo de acordo com seu caso de uso para qualquer ferramenta que o utilizar
+Para validar que tudo ocorreu de acordo com o previsto, você pode acessar, no seu navegador, a console do Minio na seguinte URL:
+
+`http://console-minio.silveira.com` 
+
+O usuário e senha serão os seguintes, respectivamente:
+- silveira
+- guilherme@123
 
 
+### OBS: O values.yaml será utilizado para todas as ferramentas que forem instaladas via Helm, então sinta-se livre para modificar as configuracões desse arquivo de acordo com seu caso de uso para qualquer ferramenta que o utilizar, por exemplo:
+- ingress host (DNS)
+- usuario
+- senha
+---
+# Hive Metastore
+O Hive Metastore não está descrito na arquitetura, mas é um componente importantíssimo para todo esse ambiente Big Data. O Hive Metastore é responsável por armazenar todos os metadados de tabelas que forem criadas via Spark e Trino. Ele necessita de um banco de dados relacional para armazenar esses metadados, então além do Hive Metastore, um deploy do MariaDB também será realizado. Para instalar o Hive Metastore, a partir do diretório raiz do projeto, execute os comandos abaixo:
+```
+cd hive-metastore
+kubectl apply -f maria_pvc.yaml
+kubectl apply -f maria_deployment.yaml
+kubectl apply -f hive-initschema.yaml
+kubectl apply -f metastore.yaml
+```
+---
+OBS: Caso o usuário e senha do Minio tenham sido alterados no passo anterior, será necessário executar os seguintes passos a partir do diretório raiz do projeto:
+```
+cd hive-metastore/build
+vim core-site.xml
+```
+Modifique os seguintes paramêtros no arquivo para os valores configurados no Minio:
+```
+<property>
+    <name>fs.s3a.awsAccessKeyId</name>
+    <value>silveira</value>
+</property>
+
+<property>
+    <name>fs.s3a.awsSecretAccessKey</name>
+    <value>guilherme@123</value>
+</property>
+```
+Salve o arquivo e agora execute o comando:
+```
+vim build_image.sh
+```
+Edite os seguintes paramêtros para o seu repositório e nome da imagem desejado no seu Dockerhub:
+```
+REPONAME=guisilveira
+TAG=hive-metastore
+```
+Execute o script:
+```
+bash build_image.sh
+```
+Para finalizar as modificacões, execute os comandos:
+```
+cd ..
+vim metastore.yaml
+```
+Edite a seguinte linha com o nome do seu repositório e imagem criados no Dockerhub:
+```
+image: guisilveira/hive-metastore
+```
+Após isso, execute os comandos usando `kubectl` descritos no ínicio desse tópico.
+
+---
+# Trino
+O Trino é uma ferramenta de virtualizacão de dados que usa a linguagem SQL para interagir com diversas fontes de dados. Nesse tutorial, o Trino vai estar configurado com o Hive Metastore e com o Delta para se interagir com os dados armazenados no Minio.
+Para instalá-lo, a partir do diretório raiz do projeto, execute os seguintes comandos:
+```
+cd trino
+bash install-trino.sh
+```
+Se os valores utilizados de ingress forem os defaults configurados nesse repositório, tente acessar no seu navegador a seguinte URL para validar se o Trino está funcionando:
+
+`http://trino.silveira.com`
+
+Caso não sejam os valores default, use a URL customizada que foi definida.
+
+---
+# Jupyterhub
+O Jupyterhub é uma ferramenta enterprise que te permite criar notebooks, mas com a possibilidade de segregá-lo em um contexto de usuários. Resumindo, no Kubernetes, ele é capaz de criar pods para cada usuário e cada usuário tem seus próprios notebooks (armazenados em PVC's separados)
+Para instalá-lo, a partir do diretório raiz, execute os seguintes comandos:
+```
+cd jupyter
+bash install-jupyterhub.sh
+kubectl apply -f jupyterhub-svc-sa.yaml
+```
+Se os valores utilizados de ingress forem os defaults configurados nesse repositório, tente acessar no seu navegador a seguinte URL para validar se o Jupyterhub está funcionando:
+
+`http://jupyterhub.silveira.com`
+
+Caso não sejam os valores default, use a URL customizada que foi definida.
+
+OBS: Todo usuário pode ser criado sem o uso de senha, mas caso seja necessário implantar o controle de acesso, veja como aplicá-lo [aqui](https://zero-to-jupyterhub.readthedocs.io/en/latest/administrator/authentication.html).
+
+---
+# Spark on K8S
+O Spark on K8S funciona a partir de um Operator. Esse Operator foi criado pelo Google e é utilizado para rodar o Spark utilizando o Kubernetes API como master, sendo possível criar pods em tempo de execucão para que um job possa ser executado de forma paralela.
+Para instalar o Operator, a partir do diretório raiz do projeto, execute os seguintes comandos:
+```
+cd spark
+bash install-spark-operator.sh
+```
+
+Nesse mesmo diretório tem exemplos de manifest sutilizando o Spark Operator para fazer o deploy de um job Spark no Kubernetes. Mas esses jobs não devem ser executados, o objetivo dele é fornecer um entendimento sobre a estrutura do manifest utilizando o Spark Operator. Para mais detalhes, clique [aqui](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator)
+
+---
+# Kafka
+O Apache Kafka é uma ferramenta de mensageria utilizada para Streaming de dados. Ele é muito mais poderoso que isso, mas para descrever tudo que o Kafka é capaz de fazer, precisaria de tutorial só para ele.
+Para instalá-lo, a partir do diretório raiz, execute os seguintes comandos:
+```
+cd kafka/strimzi
+bash install-kafka.sh
+```
+
+Uma UI também é instalada no procedimento para gerenciar o cluster Kafka. Se os valores utilizados de ingress forem os defaults configurados nesse repositório, tente acessar no seu navegador a seguinte URL para validar se o Kafka está funcionando:
+
+`http://kafka-ui.silveira.com`
+
+Caso não sejam os valores default, use a URL customizada que foi definida.
+
+---
+# Airflow
+O Apache Airflow é uma ferramenta de orquestracão de jobs muito usado no contexto de pipelines de ingestão Big Data. 
+
+Um ponto importante sobre o airflow, é que todas as suas pipelines (chamadas de DAG's) são armazenadas em um repositório, utilizando a sincronizacão com o Git.
+Para vincular as DAG's do Airflow ao seu repositório corporativo/pessoal, executa os seguintes passos:
+
+Abra o arquivo values.yaml
+```
+cd airflow
+vim values.yaml
+```
+Modifique os paramêtros `dags.gitSync` para os paramêtros desejados:
+```
+enabled: true
+repo: https://github.com/Guilherme-Silveira/airflow-dags.git
+branch: main
+rev: HEAD
+depth: 1
+maxFailures: 0
+subPath: "dags"
+credentialsSecret: git-credentials
+```
+
+É importante notar que o paramêtro `credentialsSecret: git-credentials` faz referência a uma Secret que deve ser criada com suas credenciais de acesso ao repositório. Para fazer isso, execute os seguintes passos:
+
+Crie um arquivo chamado `git-secret.yaml` com o seguinte conteúdo:
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: git-credentials
+  namespace: bigdata
+data:
+  GIT_SYNC_USERNAME: <base64_encoded_git_username>
+  GIT_SYNC_PASSWORD: <base64_encoded_git_password>
+```
+
+Após isso, execute o seguinte comando para criar a Secret:
+
+```
+kubectl apply -f git-secret.yaml
+```
+
+Para concluir a instalacão do Airflow, execute os seguintes comandos:
+```
+bash install-airflow.sh
+```
+
+Se os valores utilizados de ingress forem os defaults configurados nesse repositório, tente acessar no seu navegador a seguinte URL para validar se o Airflow está funcionando:
+
+`http://airflow.silveira.com`
+
+Caso não sejam os valores default, use a URL customizada que foi definida.
+
+---
+# Superset
+O Apache Superset é uma ferramenta de visualizacão de dados. Para instalá-la, a partir do diretório raiz, execute os seguintes comandos:
+```
+cd superset
+bash install-superset.sh
+```
+
+Se os valores utilizados de ingress forem os defaults configurados nesse repositório, tente acessar no seu navegador a seguinte URL para validar se o Superset está funcionando:
+
+`http://superset.silveira.com`
+
+Caso não sejam os valores default, use a URL customizada que foi definida.
+
+---
+
+Após todos esses procedimentos, seu ambiente Big Data estará funcionando! Espero que isso possa ser útil para vocês! Qualquer sugestão ou crítica construtiva, só avisar!
