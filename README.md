@@ -128,6 +128,7 @@ O usuário e senha serão os seguintes, respectivamente:
 O Hive Metastore não está descrito na arquitetura, mas é um componente importantíssimo para todo esse ambiente Big Data. O Hive Metastore é responsável por armazenar todos os metadados de tabelas que forem criadas via Spark e Trino. Ele necessita de um banco de dados relacional para armazenar esses metadados, então além do Hive Metastore, um deploy do MariaDB também será realizado. Para instalar o Hive Metastore, a partir do diretório raiz do projeto, execute os comandos abaixo:
 ```
 cd hive-metastore
+bash create-configmap.sh
 kubectl apply -f maria_pvc.yaml
 kubectl apply -f maria_deployment.yaml
 kubectl apply -f hive-initschema.yaml
@@ -151,27 +152,10 @@ Modifique os seguintes paramêtros no arquivo para os valores configurados no Mi
     <value>guilherme@123</value>
 </property>
 ```
-Salve o arquivo e agora execute o comando:
-```
-vim build_image.sh
-```
-Edite os seguintes paramêtros para o seu repositório e nome da imagem desejado no seu Dockerhub:
-```
-REPONAME=guisilveira
-TAG=hive-metastore
-```
-Execute o script:
-```
-bash build_image.sh
-```
-Para finalizar as modificacões, execute os comandos:
+Salve o arquivo e agora execute os comandos:
 ```
 cd ..
-vim metastore.yaml
-```
-Edite a seguinte linha com o nome do seu repositório e imagem criados no Dockerhub:
-```
-image: guisilveira/hive-metastore
+bash create-configmap.sh
 ```
 Após isso, execute os comandos usando `kubectl` descritos no ínicio desse tópico.
 
