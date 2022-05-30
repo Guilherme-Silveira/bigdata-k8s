@@ -185,7 +185,7 @@ secretMounts: []
 
 coordinator:
   jvm:
-    maxHeapSize: "8G"
+    maxHeapSize: "4G"
     gcMethod:
       type: "UseG1GC"
       g1:
@@ -207,7 +207,7 @@ coordinator:
 
 worker:
   jvm:
-    maxHeapSize: "8G"
+    maxHeapSize: "4G"
     gcMethod:
       type: "UseG1GC"
       g1:
