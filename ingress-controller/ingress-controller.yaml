@@ -271,7 +271,7 @@ metadata:
   name: ingress-nginx-controller
   namespace: ingress-nginx
 spec:
-  type: LoadBalancer
+  type: NodePort
   ipFamilyPolicy: SingleStack
   ipFamilies:
     - IPv4
