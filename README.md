@@ -180,7 +180,6 @@ Para instalá-lo, a partir do diretório raiz, execute os seguintes comandos:
 ```
 cd jupyter
 bash install-jupyterhub.sh
-kubectl apply -f jupyterhub-svc-sa.yaml
 ```
 Se os valores utilizados de ingress forem os defaults configurados nesse repositório, tente acessar no seu navegador a seguinte URL para validar se o Jupyterhub está funcionando:
 

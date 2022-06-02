@@ -95,6 +95,21 @@ hub:
     enabled: false
     maxUnavailable:
     minAvailable: 1
+  networkPolicy:
+    enabled: false
+    ingress: []
+    ## egress for JupyterHub already includes Kubernetes internal DNS and
+    ## access to the proxy, but can be restricted further, but ensure to allow
+    ## access to the Kubernetes API server that couldn't be pinned ahead of
+    ## time.
+    ##
+    ## ref: https://stackoverflow.com/a/59016417/2220152
+    egress:
+      - to:
+          - ipBlock:
+              cidr: 0.0.0.0/0
+    interNamespaceAccessLabels: ignore
+    allowedIngressPorts: []
   allowNamedServers: false
   namedServerLimitPerUser:
   authenticatePrometheus:
@@ -199,6 +214,15 @@ proxy:
     extraEnv: {}
     nodeSelector: {}
     tolerations: []
+    networkPolicy:
+      enabled: false
+      ingress: []
+      egress:
+        - to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+      interNamespaceAccessLabels: ignore
+      allowedIngressPorts: [http, https]
     pdb:
       enabled: false
       maxUnavailable:
@@ -231,7 +255,7 @@ proxy:
     tolerations: []
     extraPorts: []
     networkPolicy:
-      enabled: true
+      enabled: false
       ingress: []
       egress:
         - to:
@@ -296,6 +320,23 @@ singleuser:
       tag: "1.2.0"
       pullPolicy:
       pullSecrets: []
+  networkPolicy:
+    enabled: false
+    ingress: []
+    egress:
+      # Required egress to communicate with the hub and DNS servers will be
+      # augmented to these egress rules.
+      #
+      # This default rule explicitly allows all outbound traffic from singleuser
+      # pods, except to a typical IP used to return metadata that can be used by
+      # someone with malicious intent.
+      - to:
+          - ipBlock:
+              cidr: 0.0.0.0/0
+              except:
+                - 169.254.169.254/32
+    interNamespaceAccessLabels: ignore
+    allowedIngressPorts: []
   events: true
   extraAnnotations: {}
   extraLabels:
@@ -308,7 +349,7 @@ singleuser:
   extraContainers: []
   uid: 1000
   fsGid: 1000
-  serviceAccountName: jupyter
+  serviceAccountName: jupyterhub
   storage:
     type: dynamic
     extraLabels: {}

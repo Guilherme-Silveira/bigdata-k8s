@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: jupyterhub-driver
+  name: jupyterhub
   namespace: bigdata
   labels:
     app: jupyterhub
@@ -31,18 +31,18 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: jupyter
+  name: jupyterhub
   namespace: bigdata
   labels:
-    app: jupyter
+    app: jupyterhub
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: jupyter
+  name: jupyterhub
 subjects:
   - kind: ServiceAccount
-    name: jupyter
+    name: jupyterhub
     namespace: bigdata
 roleRef:
   kind: ClusterRole
