@@ -1,4 +1,3 @@
 airflow-dags
-jupyter/builds
 airflow/git-secret.yaml
 utils
