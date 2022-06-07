@@ -173,6 +173,8 @@ Se os valores utilizados de ingress forem os defaults configurados nesse reposit
 
 Caso não sejam os valores default, use a URL customizada que foi definida.
 
+Obs: Caso você não esteja utilizando o usuário e senha padrões definidos nesse tutorial para o Minio, você deve modificar os parâmetros de Access Key e Secret Key dentro do arquivo values.yaml para os conectores do Hive Metastore e do Delta Lake.
+
 ---
 # Jupyterhub
 O Jupyterhub é uma ferramenta enterprise que te permite criar notebooks, mas com a possibilidade de segregá-lo em um contexto de usuários. Resumindo, no Kubernetes, ele é capaz de criar pods para cada usuário e cada usuário tem seus próprios notebooks (armazenados em PVC's separados)
