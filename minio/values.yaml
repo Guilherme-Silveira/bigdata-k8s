@@ -21,6 +21,7 @@ ingress:
   labels: {}
   annotations: 
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 10g
   path: /
   hosts:
     - minio.silveira.com
@@ -38,6 +39,7 @@ consoleIngress:
   labels: {}
   annotations: 
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 10g
   path: /
   hosts:
     - console-minio.silveira.com
