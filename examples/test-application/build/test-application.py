@@ -14,7 +14,7 @@ conf.setAppName("test-application")
 
 spark = SparkSession.builder.config(conf=conf).enableHiveSupport().getOrCreate()
 
-df = spark.read.table('raw.stocks_external')
+df = spark.read.table('bronze.titles')
 
-df.write.saveAsTable('raw.stocks_spark') 
+df.write.saveAsTable('bronze.titles_spark') 
   
