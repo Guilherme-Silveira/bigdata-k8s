@@ -18,7 +18,7 @@ default_args = {
 dag = DAG(
   'test-spark-pipeline',
   default_args=default_args,
-  start_date=datetime(2022, 12, 1),
+  start_date=datetime.now(),
   schedule_interval='@weekly',
   tags=['test', 'development', 'bash']
 )
