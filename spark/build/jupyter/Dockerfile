@@ -8,6 +8,7 @@ RUN pip install notedown plotly seaborn matplotlib
 RUN pip install bokeh xlrd yellowbrick
 RUN pip install scikit-learn scikit-image
 RUN pip install scipy
+RUN pip install tensorflow
 RUN pip install jupyterlab jupyterhub==1.5.0 jupyterlab-horizon-theme JLDracula s3contents \
 	&& mkdir -p /home/public && chmod 777 /home/public
 RUN pip install py4j \
