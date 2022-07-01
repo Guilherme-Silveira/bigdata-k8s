@@ -1,3 +1,5 @@
 airflow-dags
 airflow/git-secret.yaml
 utils
+spark/build/spark-base/spark-jars
+spark/build/build-images.sh
