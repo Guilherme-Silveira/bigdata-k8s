@@ -2,7 +2,7 @@ FROM ubuntu:18.04 AS deps
 
 RUN apt-get update && apt-get -y install wget
 WORKDIR /tmp
-RUN wget https://dlcdn.apache.org/spark/spark-3.2.1/spark-3.2.1-bin-hadoop3.2.tgz \
+RUN wget https://archive.apache.org/dist/spark/spark-3.2.1/spark-3.2.1-bin-hadoop3.2.tgz \
 	&& tar xvzf spark-3.2.1-bin-hadoop3.2.tgz 
 
 
