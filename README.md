@@ -13,7 +13,8 @@ Esse repositório tem como propósito criar um ambiente big data do zero no Kube
 - Superset (Data Viz)
 
 Arquitetura do projeto:
-![architeture](https://user-images.githubusercontent.com/40548889/170894059-884e771f-3970-427e-a2a2-47f726d8fe8f.png)
+![architecture](https://user-images.githubusercontent.com/40548889/192408947-f7a5dd5f-15ea-4f84-9a26-b9cade482c26.png)
+
 
 Todo esse ambiente foi criado em um cluster Kubernetes local na minha máquina pessoal utilizando o K3D, que utiliza o Docker para simular um cluster Kubernetes multi-node rodando em containers. Porém, todos os manifestos e helm charts criados nesse repositório podem ser utilizados em servicos gerenciados de Kubernetes de Cloud Providers (EKS, GKE, AKS), os únicos pré-requisitos seriam os seguintes:
 - [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) configurado
