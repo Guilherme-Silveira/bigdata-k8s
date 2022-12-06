@@ -16,7 +16,8 @@ bootstrapScript: |
   rm -rf /var/lib/apt/lists/* && \
   pip install \
     psycopg2-binary==2.9.1 \
-    redis==3.5.3 && \
+    redis==3.5.3 \
+    sqlalchemy-trino && \
   if [ ! -f ~/bootstrap ]; then echo "Running Superset with uid {{ .Values.runAsUser }}" > ~/bootstrap; fi
 ## The name of the secret which we will use to generate a superset_config.py file
 ## Note: this secret must have the key superset_config.py in it and can include other files as well
@@ -141,7 +142,7 @@ extraConfigMountPath: "/app/configs"
 
 image:
   repository: apache/superset
-  tag: 1.5.1
+  tag: latest
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
