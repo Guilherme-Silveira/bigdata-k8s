@@ -83,6 +83,7 @@ Adicione o seguinte conteúdo ao arquivo:
 127.0.0.1 superset.silveira.com
 127.0.0.1 airflow.silveira.com
 127.0.0.1 jupyterhub.silveira.com
+127.0.0.1 airbyte.silveira.com
 ```
 
 Lembrando que é possível usar seu próprios "registros DNS" customizados, mas se esse for o caso, lembre-se de mudar os valores necessários nos manifests/helm charts durante o deploy de cada uma das ferramentas da stack.
@@ -161,8 +162,22 @@ bash create-configmap.sh
 Após isso, execute os comandos usando `kubectl` descritos no ínicio desse tópico.
 
 ---
+# Airbyte
+O Airbyte é uma ferramenta de EL(T), que a partir de uma interface simples e intuitiva, permite fazer a ingestão de dados de diversas fontes diferentes.
+Para instalá-lo, a partir do diretório raiz do projeto, execute os seguintes comandos:
+```
+cd airbyte
+bash install-airbyte.sh
+```
+Se os valores utilizados de ingress forem os defaults configurados nesse repositório, tente acessar no seu navegador a seguinte URL para validar se o Trino está funcionando:
+
+`http://airbyte.silveira.com`
+
+Caso não sejam os valores default, use a URL customizada que foi definida.
+
+---
 # Trino
-O Trino é uma ferramenta de virtualizacão de dados que usa a linguagem SQL para interagir com diversas fontes de dados. Nesse tutorial, o Trino vai estar configurado com o Hive Metastore e com o Delta para se interagir com os dados armazenados no Minio.
+O Trino é uma ferramenta de virtualizacão de dados que usa a linguagem SQL para interagir com diversas fontes de dados. Nesse tutorial, o Trino vai estar configurado com o Hive Metastore e com o Delta e Iceberg para se interagir com os dados armazenados no Minio.
 Para instalá-lo, a partir do diretório raiz do projeto, execute os seguintes comandos:
 ```
 cd trino
