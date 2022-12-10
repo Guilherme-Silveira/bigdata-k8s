@@ -54,8 +54,8 @@ airflowVersion: "2.5.0"
 # Images
 images:
   airflow:
-    repository: ~
-    tag: ~
+    repository: guisilveira/airflow
+    tag: 2.5.0
     pullPolicy: IfNotPresent
   # To avoid images with user code, you can turn this to 'true' and
   # all the 'run-airflow-migrations' and 'wait-for-airflow-migrations' containers/jobs
