@@ -5,6 +5,7 @@ Esse repositório tem como propósito criar um ambiente big data do zero no Kube
 - Minio (Data Lake)
 - Airflow (Orquestrador)
 - Apache Kafka (Streaming)
+- Airbyte (Ingestão de dados)
 - Hive Metastore (Metadados - Tabelas)
 - Apache Spark on K8S (Processamento Batch e Streaming)
 - JupyterHub (Processamento - Integrado com Apache Spark)
