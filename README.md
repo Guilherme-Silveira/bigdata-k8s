@@ -290,6 +290,8 @@ Se os valores utilizados de ingress forem os defaults configurados nesse reposit
 
 Caso não sejam os valores default, use a URL customizada que foi definida.
 
+Há um exemplo no diretório `examples` desse repo em como construir uma dag chamando as connections do Airbyte e executando um job Spark usando o SparkOnKubernetes Operator.
+
 ---
 # Superset
 O Apache Superset é uma ferramenta de visualizacão de dados. Para instalá-la, a partir do diretório raiz, execute os seguintes comandos:

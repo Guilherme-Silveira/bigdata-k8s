@@ -3,7 +3,7 @@ from os import getenv
 from airflow.models import DAG
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
 from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
-
+from airflow.providers.airbyte.operators.airbyte import AirbyteTriggerSyncOperator
 
 default_args = {
   'owner': 'Guilherme da Silveira Souto Souza',
@@ -23,6 +23,15 @@ dag = DAG(
   tags=['test', 'development', 'bash']
 )
 
+test_airbyte = AirbyteTriggerSyncOperator(
+  task_id='test_airbyte',
+  airbyte_conn_id='airbyte',
+  connection_id='0c5af1ab-e900-4fdb-9708-8c7bec4d459e',
+  asynchronous=False,
+  timeout=7200,
+  wait_seconds=3
+)
+
 test_application_spark = SparkKubernetesOperator(
   task_id ='test_application_spark',
   namespace ='bigdata',
@@ -40,4 +49,4 @@ monitor_spark_app_status = SparkKubernetesSensor(
   dag=dag
 )
 
-test_application_spark >> monitor_spark_app_status
+test_airbyte >> test_application_spark >> monitor_spark_app_status
