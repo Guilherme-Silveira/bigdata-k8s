@@ -1,0 +1,37 @@
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: ScheduledSparkApplication
+metadata:
+  name: spark-pi-scheduled
+  namespace: bigdata
+spec:
+  schedule: "@every 2m"
+  concurrencyPolicy: Allow
+  successfulRunHistoryLimit: 1
+  failedRunHistoryLimit: 3
+  template:
+    type: Python
+    pythonVersion: "3"
+    mode: cluster
+    image: "guisilveira/test-application-spark"
+    imagePullPolicy: Always
+    mainApplicationFile: local:///app/test-application.py
+    sparkVersion: "3.2.1"
+    restartPolicy:
+      type: OnFailure
+      onFailureRetries: 3
+      onFailureRetryInterval: 10
+      onSubmissionFailureRetries: 5
+      onSubmissionFailureRetryInterval: 20
+    driver:
+      cores: 1
+      coreLimit: "1200m"
+      memory: "512m"
+      labels:
+        version: 3.2.1
+      serviceAccount: jupyterhub
+    executor:
+      cores: 1
+      instances: 1
+      memory: "512m"
+      labels:
+        version: 3.2.1
