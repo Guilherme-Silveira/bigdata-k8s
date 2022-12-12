@@ -29,7 +29,8 @@ test_airbyte = AirbyteTriggerSyncOperator(
   connection_id='0c5af1ab-e900-4fdb-9708-8c7bec4d459e',
   asynchronous=False,
   timeout=7200,
-  wait_seconds=3
+  wait_seconds=3,
+  dag=dag
 )
 
 test_application_spark = SparkKubernetesOperator(
