@@ -28,6 +28,8 @@ RUN pip install jupyter-spark \
 	&& jupyter nbextension enable --py jupyter_spark \
 	&& jupyter nbextension enable --py widgetsnbextension
 
+RUN jupyter labextension install jupyterlab_onedarkpro
+
 # Configure Jupyter User
 ARG NB_USER="jovyan"
 ARG NB_UID="1000"
