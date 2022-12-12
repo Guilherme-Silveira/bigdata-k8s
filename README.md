@@ -223,6 +223,27 @@ bash install-spark-operator.sh
 
 Nesse mesmo diretório tem exemplos de manifest sutilizando o Spark Operator para fazer o deploy de um job Spark no Kubernetes. Mas esses jobs não devem ser executados, o objetivo dele é fornecer um entendimento sobre a estrutura do manifest utilizando o Spark Operator. Para mais detalhes, clique [aqui](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator)
 
+- Exemplo de criação de uma imagem com um Job Spark:
+  - Acesse o diretório `spark/test-application/build`. Dentro dele, crie o arquivo `.py` com seu job Spark. Para contruir a imagem, use como base a imagem `guisilveira/spark-base`. Ela contém todos os Jars necessários para trabalhar com Delta e Iceberg. Exemplo de Dockerfile:
+    - ``` Dockerfile
+        FROM guisilveira/spark-base
+
+        USER root
+
+        RUN mkdir -p /app
+
+        COPY ./test-application.py /app/
+
+        WORKDIR /app
+
+        USER 1001
+      ```
+  - Build a imagem:
+    - ``` 
+        $ docker build -t guisilveira/test-application-spark .
+        $ docker push guisilveira/test-application-spark 
+      ```
+
 ---
 # Kafka
 O Apache Kafka é uma ferramenta de mensageria utilizada para Streaming de dados. Ele é muito mais poderoso que isso, mas para descrever tudo que o Kafka é capaz de fazer, precisaria de tutorial só para ele.
