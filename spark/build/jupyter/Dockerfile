@@ -3,6 +3,12 @@ FROM guisilveira/spark-driver
 
 # Install Jupyter and Data Science libraries
 USER root
+RUN apt-get update -y && apt-get install -y \
+    software-properties-common \
+    npm
+RUN npm install npm@latest -g && \
+    npm install n -g && \
+    n latest
 RUN pip install numpy pandas 
 RUN pip install notedown plotly seaborn matplotlib 
 RUN pip install bokeh xlrd yellowbrick
