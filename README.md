@@ -193,6 +193,9 @@ Caso não sejam os valores default, use a URL customizada que foi definida.
 
 Obs: Caso você não esteja utilizando o usuário e senha padrões definidos nesse tutorial para o Minio, você deve modificar os parâmetros de Access Key e Secret Key dentro do arquivo values.yaml para os conectores do Hive Metastore e do Delta Lake.
 
+Credenciais de acesso:
+  - Usuário: trino
+
 ---
 # Jupyterhub
 O Jupyterhub é uma ferramenta enterprise que te permite criar notebooks, mas com a possibilidade de segregá-lo em um contexto de usuários. Resumindo, no Kubernetes, ele é capaz de criar pods para cada usuário e cada usuário tem seus próprios notebooks (armazenados em PVC's separados)
@@ -292,6 +295,10 @@ Caso não sejam os valores default, use a URL customizada que foi definida.
 
 Há um exemplo no diretório `examples` desse repo em como construir uma dag chamando as connections do Airbyte e executando um job Spark usando o SparkOnKubernetes Operator.
 
+Credenciais de acesso:
+  - Usuário: admin
+  - Senha: admin
+
 ---
 # Superset
 O Apache Superset é uma ferramenta de visualizacão de dados. Para instalá-la, a partir do diretório raiz, execute os seguintes comandos:
@@ -305,6 +312,10 @@ Se os valores utilizados de ingress forem os defaults configurados nesse reposit
 `http://superset.silveira.com`
 
 Caso não sejam os valores default, use a URL customizada que foi definida.
+
+Credenciais de acesso:
+  - Usuário: admin
+  - Senha: admin
 
 ---
 
