@@ -180,6 +180,7 @@ Caso não sejam os valores default, use a URL customizada que foi definida.
 Seu funcionamento é muito simples. Todas as ingestões devem ser feitas na UI (super interativa por sinal), definindo `sources` e `destinations`. Depois de definir ambos, será necessário conectar ambos, para isso é necessário criar uma `connection` (defina o trigger da connection como `manual`, pois quem a executará será o Airflow). Feito o isso o Airbyte vai "coletar" os dados do `source` e enviar para a `destination`.
 
 OBS: Para rodar essa connection no Airflow mais adiante, será necessário o ID da connection. Para isso, na UI, clique na connection criada. O seu ID será mostrado na URL como no exemplo abaixo:
+<img width="1792" alt="Screen Shot 2022-12-13 at 14 14 09" src="https://user-images.githubusercontent.com/40548889/207402288-4ddafe06-7a23-4cfc-837e-06d23550cd6e.png">
 
 
 No caso desse exemplo, o ID da connection é: `110a8c4a-b973-4c94-aeb8-0c0d5e5573b0`
