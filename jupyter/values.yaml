@@ -75,10 +75,7 @@ hub:
   args: []
   extraConfig: {}
   extraFiles: {}
-  extraEnv:
-    AWS_ACCESS_KEY_ID: "silveira"
-    AWS_SECRET_ACCESS_KEY: "guilherme@123"
-    AWS_REGION: "us-east-1"
+  extraEnv: {}
   extraContainers: []
   extraVolumes: []
   extraVolumeMounts: []
@@ -214,10 +211,7 @@ proxy:
     resources: {}
     defaultTarget:
     errorTarget:
-    extraEnv: 
-      AWS_ACCESS_KEY_ID: "silveira"
-      AWS_SECRET_ACCESS_KEY: "guilherme@123"
-      AWS_REGION: "us-east-1"
+    extraEnv: {}
     nodeSelector: {}
     tolerations: []
     networkPolicy:
@@ -252,10 +246,7 @@ proxy:
       maxAge: 15724800 # About 6 months
     resources: {}
     labels: {}
-    extraEnv: 
-      AWS_ACCESS_KEY_ID: "silveira"
-      AWS_SECRET_ACCESS_KEY: "guilherme@123"
-      AWS_REGION: "us-east-1"
+    extraEnv: {}
     extraVolumes: []
     extraVolumeMounts: []
     extraStaticConfig: {}
@@ -353,9 +344,6 @@ singleuser:
   extraFiles: {}
   extraEnv:
     JUPYTERHUB_SINGLEUSER_APP: "notebook.notebookapp.NotebookApp"
-    AWS_ACCESS_KEY_ID: "silveira"
-    AWS_SECRET_ACCESS_KEY: "guilherme@123"
-    AWS_REGION: "us-east-1"
   lifecycleHooks: {}
   initContainers: []
   extraContainers: []
