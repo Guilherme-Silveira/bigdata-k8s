@@ -2,4 +2,4 @@
 
 helm repo add superset https://apache.github.io/superset
 
-helm upgrade --install --values values.yaml superset superset/superset --namespace bigdata
+helm upgrade --install --version 0.7.7 --values values.yaml superset superset/superset --namespace bigdata
