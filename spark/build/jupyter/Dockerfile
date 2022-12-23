@@ -31,7 +31,9 @@ RUN pip install jupyter-spark \
 RUN jupyter labextension install jupyterlab_onedarkpro
 
 # Install DuckDB
-RUN pip install ipython-sql SQLAlchemy duckdb-engine duckdb 
+RUN pip install ipython-sql SQLAlchemy duckdb-engine duckdb pyarrow
+
+RUN pip install -U 'polars[pyarrow]'
 
 # Configure Jupyter User
 ARG NB_USER="jovyan"
