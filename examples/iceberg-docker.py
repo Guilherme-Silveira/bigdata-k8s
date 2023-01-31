@@ -17,7 +17,6 @@ conf.set("spark.sql.catalog.spark_catalog", "org.apache.iceberg.spark.SparkSessi
 conf.set("hive.metastore.uris", "thrift://metastore:9083")
 conf.set("spark.sql.catalog.spark_catalog.type", "hive")
 conf.set("spark.sql.catalog.spark_catalog.uri", "thrift://metastore:9083")
-conf.set("spark.sql.catalog.spark_catalog.io-impl", "org.apache.iceberg.aws.s3.S3FileIO")
 conf.set("spark.sql.catalog.spark_catalog.s3.endpoint", "http://minio:9000")
 conf.set("iceberg.engine.hive.enabled", "true")
 conf.set("spark.sql.defaultCatalog", "spark_catalog")

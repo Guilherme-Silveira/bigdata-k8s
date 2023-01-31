@@ -136,6 +136,8 @@ additionalCatalogs:
     hive.s3.aws-secret-key=guilherme@123
     hive.s3.endpoint=http://minio-minio-storage:9000
     hive.s3.path-style-access=true
+    iceberg.register-table-procedure.enabled=true
+    iceberg.unique-table-location=false
 
 # Array of EnvVar (https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#envvar-v1-core)
 env:
