@@ -35,7 +35,9 @@ RUN pip install ipython-sql SQLAlchemy duckdb-engine duckdb pyarrow deltalake py
 
 RUN pip install -U 'polars[pyarrow]'
 
+# Install Powerbi
 RUN pip install powerbiclient
+RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
 
 # Configure Jupyter User
 ARG NB_USER="jovyan"
