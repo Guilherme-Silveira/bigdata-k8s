@@ -35,6 +35,8 @@ RUN pip install ipython-sql SQLAlchemy duckdb-engine duckdb pyarrow deltalake py
 
 RUN pip install -U 'polars[pyarrow]'
 
+RUN pip install powerbiclient
+
 # Configure Jupyter User
 ARG NB_USER="jovyan"
 ARG NB_UID="1000"
