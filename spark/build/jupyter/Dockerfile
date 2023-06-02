@@ -31,9 +31,11 @@ RUN pip install jupyter-spark \
 RUN jupyter labextension install jupyterlab_onedarkpro
 
 # Install DuckDB
-RUN pip install ipython-sql SQLAlchemy duckdb-engine duckdb pyarrow deltalake pyiceberg[hive,pyarrow,duckdb] aiobotocore
+RUN pip install ipython-sql SQLAlchemy pyarrow deltalake pyiceberg[hive,pyarrow,duckdb] aiobotocore
 
 RUN pip install -U 'polars[pyarrow]'
+
+RUN pip install duckdb duckdb-engine
 
 # Install Powerbi
 RUN pip install powerbiclient
