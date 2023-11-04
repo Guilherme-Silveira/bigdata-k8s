@@ -35,7 +35,7 @@ RUN pip install SQLAlchemy pyarrow deltalake pyiceberg[hive,pyarrow,duckdb] aiob
 
 RUN pip install -U 'polars[pyarrow]'
 
-RUN pip install duckdb==0.8.1 duckdb-engine jupysql
+RUN pip install duckdb==0.9.1 duckdb-engine jupysql
 
 # Install Powerbi
 RUN pip install powerbiclient
